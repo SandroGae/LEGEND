@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box name="WorldBox" x="1000" y="1000" z="1000" lunit="mm"/>
+		<tube name="Sample LV" rmin="1.9" rmax="2" z="4" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Absorber LV" rmin="0" rmax="16" z="37.5" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+	</solids>
+	<structure>
+		<volume name="SourceLV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Sample LV"/>
+		</volume>
+		<volume name="AbsorberLV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Absorber LV"/>
+		</volume>
+		<volume name="WorldLV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="WorldBox"/>
+			<physvol name="Lowest Source PV1">
+				<volumeref ref="SourceLV"/>
+				<position name="Lowest Source PV1_pos" x="121.471999999999994" y="-96.277000000000001" z="-165.050000000000011" unit="mm"/>
+			</physvol>
+			<physvol name="Second Lowest Source PV1">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Lowest Source PV1_pos" x="121.471999999999994" y="-96.277000000000001" z="-65.050000000000011" unit="mm"/>
+			</physvol>
+			<physvol name="Second Highest Source PV1">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Highest Source PV1_pos" x="121.471999999999994" y="-96.277000000000001" z="34.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Highest Source PV1">
+				<volumeref ref="SourceLV"/>
+				<position name="Highest Source PV1_pos" x="121.471999999999994" y="-96.277000000000001" z="134.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Absorber PV1">
+				<volumeref ref="AbsorberLV"/>
+				<position name="Absorber PV1_pos" x="121.471999999999994" y="-96.277000000000001" z="-300.000000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Lowest Source PV2">
+				<volumeref ref="SourceLV"/>
+				<position name="Lowest Source PV2_pos" x="-120.966700000000003" y="-96.912599999999998" z="-65.049999999999997" unit="mm"/>
+			</physvol>
+			<physvol name="Second Lowest Source PV2">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Lowest Source PV2_pos" x="-120.966700000000003" y="-96.912599999999998" z="34.950000000000003" unit="mm"/>
+			</physvol>
+			<physvol name="Second Highest Source PV2">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Highest Source PV2_pos" x="-120.966700000000003" y="-96.912599999999998" z="134.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Highest Source PV2">
+				<volumeref ref="SourceLV"/>
+				<position name="Highest Source PV2_pos" x="-120.966700000000003" y="-96.912599999999998" z="234.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Absorber PV2">
+				<volumeref ref="AbsorberLV"/>
+				<position name="Absorber PV2_pos" x="-120.966700000000003" y="-96.912599999999998" z="-200.000000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Lowest Source PV3">
+				<volumeref ref="SourceLV"/>
+				<position name="Lowest Source PV3_pos" x="-121.304000000000002" y="96.489769999999993" z="34.950000000000003" unit="mm"/>
+			</physvol>
+			<physvol name="Second Lowest Source PV3">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Lowest Source PV3_pos" x="-121.304000000000002" y="96.489769999999993" z="134.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Second Highest Source PV3">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Highest Source PV3_pos" x="-121.304000000000002" y="96.489769999999993" z="234.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Highest Source PV3">
+				<volumeref ref="SourceLV"/>
+				<position name="Highest Source PV3_pos" x="-121.304000000000002" y="96.489769999999993" z="334.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Absorber PV3">
+				<volumeref ref="AbsorberLV"/>
+				<position name="Absorber PV3_pos" x="-121.304000000000002" y="96.489769999999993" z="-100.000000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Lowest Source PV4">
+				<volumeref ref="SourceLV"/>
+				<position name="Lowest Source PV4_pos" x="121.135000000000005" y="96.700000000000003" z="134.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Second Lowest Source PV4">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Lowest Source PV4_pos" x="121.135000000000005" y="96.700000000000003" z="234.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Second Highest Source PV4">
+				<volumeref ref="SourceLV"/>
+				<position name="Second Highest Source PV4_pos" x="121.135000000000005" y="96.700000000000003" z="334.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Highest Source PV4">
+				<volumeref ref="SourceLV"/>
+				<position name="Highest Source PV4_pos" x="121.135000000000005" y="96.700000000000003" z="434.949999999999989" unit="mm"/>
+			</physvol>
+			<physvol name="Absorber PV4">
+				<volumeref ref="AbsorberLV"/>
+				<position name="Absorber PV4_pos" x="121.135000000000005" y="96.700000000000003" z="0.000000000000000" unit="mm"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="WorldLV"/>
+	</setup>
+</gdml>

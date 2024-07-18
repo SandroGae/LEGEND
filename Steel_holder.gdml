@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<tube name="Cylinder2" rmin="0.0" rmax="2.5" z="4.3" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Cylinder1" rmin="0.0" rmax="3.2" z="4.5" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Cavity" rmin="0.0" rmax="2.0" z="2.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<box name="MotherBox" x="20" y="20" z="40" lunit="mm"/>
+	</solids>
+	<structure>
+		<volume name="Cylinder2_LV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Cylinder2"/>
+		</volume>
+		<volume name="Cavity_LV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Cavity"/>
+		</volume>
+		<volume name="Cylinder1_LV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Cylinder1"/>
+			<physvol name="Cavity_PV">
+				<volumeref ref="Cavity_LV"/>
+			</physvol>
+		</volume>
+		<volume name="Mother_LV">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="MotherBox"/>
+			<physvol name="Cylinder2_PV">
+				<volumeref ref="Cylinder2_LV"/>
+				<position name="Cylinder2_PV_pos" x="0.000000000000000" y="0.000000000000000" z="-4.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Cylinder1_PV">
+				<volumeref ref="Cylinder1_LV"/>
+				<position name="Cylinder1_PV_pos" x="0.000000000000000" y="0.000000000000000" z="-8.800000000000001" unit="mm"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="Mother_LV"/>
+	</setup>
+</gdml>
