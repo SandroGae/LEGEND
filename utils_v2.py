@@ -1,16 +1,11 @@
 import pyg4ometry
-import math
-from l200geom import construct
 import pyg4ometry.geant4 as g4
 import pyg4ometry.gdml as gdml
 import pyg4ometry.exceptions
-import sys
 
-sys.path.insert(0, "/legend-pygeom-l200/src")  # This line works only in the docker container
-import l200geom.core
 
 # Function to create a cylindrical solid
-def create_cylinder(name, inner_radius, outer_radius, height, start_angle, end_angle, registry):
+def create_cylinder(number, name, inner_radius, outer_radius, height, start_angle, end_angle, registry): #number choosed correct mass for each source
     """Create a cylindrical solid with specified parameters."""
     return pyg4ometry.geant4.solid.Tubs(name, inner_radius, outer_radius, height, start_angle, end_angle, registry=registry)
 
@@ -141,65 +136,3 @@ def RenameGeomObjects(reg):
         reg.addPhysicalVolume(pvobj)
 
     return reg
-
-reg = construct()
-reg = RenameGeomObjects(reg)
-
-# Set the world as the root volume
-reg.setWorld("world_LV")
-
-# Volume where the sources are placed
-mother_LV = reg.findLogicalVolumeByName('lar_LV')  # TODO: is lar_LV the correct one?
-
-# Parameters for cylinders
-height_1 = -300  # TODO: choose height which is defined as the centre of the absorber at the moment (z position)
-height_2 = -200  # TODO: choose height which is defined as the centre of the absorber at the moment (z position)
-height_3 = -100  # TODO: choose height which is defined as the centre of the absorber at the moment (z position)
-height_4 = 0  # TODO: choose height which is defined as the centre of the absorber at the moment (z position)
-
-inner_radius_source = 1.9  # mm
-source_radius = 2  # mm
-capsule_radius = 6  # mm
-source_height = 4  # mm
-capsule_height = 10  # mm
-absorber_radius = 16
-absorber_height = 37.5
-material = "G4_Galactic"
-
-# The cylinder of the source
-capsule_solid = create_cylinder("Capsule", 0, capsule_radius, capsule_height, 0, 2 * math.pi, reg)
-capsule_lv = create_logical_volume(capsule_solid, material="metal_steel_mat", name="source_capsule_LV", registry=reg)
-
-source_solid = create_cylinder("Source", 0, source_radius, source_height, 0, 2 * math.pi, reg)
-source_lv1 = create_logical_volume(source_solid, material="G4_Galactic", name="Source1_LV", registry=reg)
-source_pv1 = place_cylinder(source_lv1, "source1_PV", capsule_lv, [0, 0, 0], reg)  # TODO: shift properly
-
-# Create the world volume
-# world_solid = pyg4ometry.geant4.solid.Box("WorldBox", 1000, 1000, 1000, reg)
-# world_lv = create_logical_volume(world_solid, material, "WorldLV", reg)
-
-# Create cylinders
-sample_solid = create_cylinder("Sample", inner_radius_source, source_radius, source_height, 0, 2 * math.pi, reg)
-absorber_solid = create_cylinder("Absorber", 0, absorber_radius, absorber_height, 0, 2 * math.pi, reg)
-absorber_lv = create_logical_volume(absorber_solid, material, "Absorber_LV", reg)
-
-# Define the z position for the lowest sample and the x, y position as well according to l200
-base_position1 = [121.472, -96.277, height_1 + 1 / 2 * absorber_height + 42 + 71 + 1.2 + 1 / 2 * source_height]
-base_position2 = [-120.9667, -96.9126, height_2 + 1 / 2 * absorber_height + 42 + 71 + 1.2 + 1 / 2 * source_height]
-base_position3 = [-121.304, 96.48977, height_3 + 1 / 2 * absorber_height + 42 + 71 + 1.2 + 1 / 2 * source_height]
-base_position4 = [121.135, 96.70, height_4 + 1 / 2 * absorber_height + 42 + 71 + 1.2 + 1 / 2 * source_height]
-
-# Place cylinders in the world where the middle of the absorber is set to be 0
-for i in range(1, 5):
-    source_lv = create_logical_volume(sample_solid, material, f"Source{i}_LV", reg)
-    place_cylinder(source_lv, f'Lowest Source PV{i}', mother_LV, [globals()[f'base_position{i}'][0], globals()[f'base_position{i}'][1], globals()[f'base_position{i}'][2]], reg)
-    place_cylinder(source_lv, f'Second Lowest Source PV{i}', mother_LV, [globals()[f'base_position{i}'][0], globals()[f'base_position{i}'][1], globals()[f'base_position{i}'][2] + 100], reg)
-    place_cylinder(source_lv, f'Second Highest Source PV{i}', mother_LV, [globals()[f'base_position{i}'][0], globals()[f'base_position{i}'][1], globals()[f'base_position{i}'][2] + 200], reg)
-    place_cylinder(source_lv, f'Highest Source PV{i}', mother_LV, [globals()[f'base_position{i}'][0], globals()[f'base_position{i}'][1], globals()[f'base_position{i}'][2] + 300], reg)
-    place_cylinder(absorber_lv, f'Absorber PV{i}', mother_LV, [globals()[f'base_position{i}'][0], globals()[f'base_position{i}'][1], globals()[f'height_{i}']], reg)
-
-# Write the geometries to a GDML file
-visual = pyg4ometry.gdml.Writer()
-visual.addDetector(reg)
-visual.write('Implemented_sources.gdml')
-
