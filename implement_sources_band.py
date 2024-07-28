@@ -219,10 +219,10 @@ for iString in range(1, 5, 1):
 # Position of the steel bands as close to the sources in x,y direction and as close the absorbers in z direction as possible
 # The idea is to position the steelband between the sources and the detectors, without touching the steel capsules
 steel_band_positions = {
-    1: [144.2840 + (capsule_radius_up + 0.01), 56.6315, height_1 + (absorber_height/ 2.0 + 0.01)],
-    2: [-23.0977, 153.2694 + (capsule_radius_up + 0.01), height_2 + (absorber_height/ 2.0 + 0.01)],
-    3: [-144.2840 - (capsule_radius_up + 0.01), -56.6315, height_3 + (absorber_height/ 2.0 + 0.01)],
-    4: [23.0977, -153.2694 - (capsule_radius_up + 0.01), height_4 + (absorber_height/ 2.0 + 0.01)]
+    1: [144.2840 + (capsule_radius_up + 0.01), 56.6315, height_1 + (absorber_height + band_length/ 2.0) + 0.01],
+    2: [-23.0977, 153.2694 + (capsule_radius_up + 0.01), height_2 + (absorber_height + band_length/ 2.0) + 0.01],
+    3: [-144.2840 - (capsule_radius_up + 0.01), -56.6315, height_3 + (absorber_height + band_length/ 2.0) + 0.01],
+    4: [23.0977, -153.2694 - (capsule_radius_up + 0.01), height_4 + (absorber_height + band_length/ 2.0) + 0.01]
 }
 
         
