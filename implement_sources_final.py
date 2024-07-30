@@ -2,6 +2,7 @@ import pyg4ometry
 import pyg4ometry.geant4 as g4
 import pyg4ometry.gdml as gdml
 import pyg4ometry.exceptions
+from Extrapolation import current_mass_list
 
 from l200geom import construct
 
@@ -44,20 +45,30 @@ capsule_height_up = 11  # mm
 capsule_radius_low = 3.98  # mm
 capsule_height_low = 8.2  # mm
 
-# Dimensions for the source (cavity)
+# Dimensions for the cavity of the upper cylinder
 capsule_cavity_radius = 4.12  # mm
 capsule_cavity_height = 10.13  # mm
 
-source_inner_radius = 1  # mm
-source_outer_radius = 2  # mm
-source_height = 4  # mm
+# Dimensions for the source (inner radius first needs to be calculated)
+source_outer_radius = 0.2  # cm
+source_height = 0.4  # cm
+density_thorium = 11.72  # density of thorium-228 in g/cm^3
+source_volume_list = []
+source_inner_radius_list = []
+for i in range(0,len(current_mass_list),1):
+    source_volume_list.append(current_mass_list[i]/density_thorium)
+    source_inner_radius = (source_outer_radius**2-(source_volume_list[i]/(source_height*math.pi)))**(1/2) # in cm
+    source_inner_radius_list.append(source_inner_radius * 10) # in mm
+#print(source_inner_radius_list)
+
+#Converting from cm to mm
+source_outer_radius = 10 * source_outer_radius  # mm
+source_height = 10 * source_height  # mm
 
 absorber_radius = 16  # mm
 absorber_height = 37.5  # mm
 
-# Dimensions of steel band (note: lengths are double the numbers, for this reason it is divided by 2)
-# TODO: measure the dimensions, current dimensions are just place holders
-# TODO: change the height of the steel bands such that they are always inside the tube
+# Dimensions of steel band
 band_length_list = []
 for n in range(0,4,1):
     band_length_list.append((1700-height_list[n]-absorber_height/2.0)) # mm
@@ -176,54 +187,65 @@ base_positions = {
 '''
 
 
-# Define the source cylinder
-source_solid = (create_cylinder(name="Source",
-                                  inner_radius=source_inner_radius,
+# Define the source cylinder with all the correct masses
+source_solid_list = []
+source_lv_list = []
+for number in range(len(current_mass_list)):
+    source_solid_list.append(create_cylinder(
+                                  name=f"Source_{number}",
+                                  inner_radius=source_inner_radius_list[number],
                                   outer_radius=source_outer_radius,
                                   height=source_height / 2.0,
                                   start_angle=0,
                                   end_angle=2 * math.pi,
                                   registry=reg))
 
-source_lv = create_logical_volume(solid=source_solid,
+    source_lv_list.append(create_logical_volume(
+                                     solid=source_solid_list[number],
                                      material="G4_Galactic",
-                                     name="Source_LV",
-                                     registry=reg)
+                                     name=f"Source_LV_{number}",
+                                     registry=reg))
 
 
 # Place cylinders in the world where the middle of the absorber is set to be 0
 source_counter = 0
-for iString in range(1, 5, 1):  # Iteration over the strings
+for iString in range(1, 5):  # Iteration over the strings
+    # Place the absorber
+    g4.PhysicalVolume(rotation=[0, 0, 0],
+                      position=[base_positions[iString][0], base_positions[iString][1], base_positions[iString][2] - (absorber_height + capsule_height_up) / 2.0],
+                      logicalVolume=absorber_lv,
+                      name=f"Absorber_{iString}_PV",
+                      motherVolume=mother_LV,
+                      registry=reg,
+                      copyNumber=iString
+                      )
+    for iSource in range(4):
+        source_counter += 1  # Increment the source counter
+        # Get the correct logical volume for this source
+        current_source_lv = source_lv_list[source_counter - 1]
         
-                g4.PhysicalVolume(rotation=[0, 0, 0],
-                                  position=[base_positions[iString][0], base_positions[iString][1], base_positions[iString][2] - (absorber_height + capsule_height_up) / 2.0],
-                                  logicalVolume=absorber_lv,
-                                  name=f"Absorber_{iString}_PV",
-                                  motherVolume=mother_LV,
-                                  registry=reg,
-                                  copyNumber=iString
-                                  )
-                for iSource in range(4):
-                    source_counter += 1  # In this way the copy number start from 1
-                    g4.PhysicalVolume(rotation=[0, 0, 0],
-                                              position=[base_positions[iString][0], base_positions[iString][1],
-                                                             base_positions[iString][2] + iSource * 100.0], # 100mm being the height difference between the sources
-                                               logicalVolume=capsule_lv,
-                                               name=f"Source_Capsule_{iString}_{iSource + 1}_PV",
-                                               motherVolume=mother_LV,
-                                               registry=reg,
-                                               copyNumber=source_counter
-                                               )
-                    
-                    g4.PhysicalVolume(rotation=[0, 0, 0],
-                                               position=[base_positions[iString][0], base_positions[iString][1],
-                                               base_positions[iString][2] + iSource * 100.0],
-                                               logicalVolume=source_lv,
-                                               name=f"Source_{iString}_{iSource + 1}_PV",
-                                               motherVolume=mother_LV,
-                                               registry=reg,
-                                               copyNumber=source_counter
-                                               )
+        # Place the capsule
+    
+        g4.PhysicalVolume(rotation=[0, 0, 0],
+                          position=[base_positions[iString][0], base_positions[iString][1],
+                                    base_positions[iString][2] + iSource * 100.0], # 100mm being the height difference between the sources
+                          logicalVolume=capsule_lv,
+                          name=f"Source_Capsule_{iString}_{iSource + 1}_PV",
+                          motherVolume=mother_LV,
+                          registry=reg,
+                          copyNumber=source_counter
+                          )
+
+        # Place the source
+        g4.PhysicalVolume(rotation=[0, 0, 0],
+                          position=[base_positions[iString][0], base_positions[iString][1],
+                                    base_positions[iString][2] + iSource * 100.0],
+                          logicalVolume=current_source_lv,
+                          name=f"Source_{iString}_{iSource + 1}_PV",
+                          motherVolume=mother_LV,
+                          registry=reg,
+                          copyNumber=source_counter
+                          )
         
 # Position of the steel bands as close to the sources in x,y direction and as close the absorbers in z direction as possible
 # The idea is to position the steelband between the sources and the detectors, without touching the steel capsules

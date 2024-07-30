@@ -37,19 +37,18 @@ height_3 = 1000
 height_4 = 700
 
 # Upper Cylinder of steel holder (the capsule)
-capsule_radius_up = 3.2  # mm
-capsule_height_up = 9.0  # mm
+capsule_radius_up = 6.38  # mm
+capsule_height_up = 11  # mm
 
 # Lower Cylinder of steel holder (the M4 screw)
-capsule_radius_low = 2.5  # mm
-capsule_height_low = 8.6  # mm
+capsule_radius_low = 3.98  # mm
+capsule_height_low = 8.2  # mm
 
 # Dimensions for the source (cavity)
-capsule_cavity_radius = 2.0  # mm
-capsule_cavity_height = 4.0  # mm
+capsule_cavity_radius = 4.12  # mm
+capsule_cavity_height = 10.13  # mm
 
-# Dimensions for the sources
-source_inner_radius = 1 #mm
+source_inner_radius = 1  # mm
 source_outer_radius = 2  # mm
 source_height = 4  # mm
 
@@ -114,26 +113,26 @@ capsule_cavity_pv = g4.PhysicalVolume(rotation=cavity_rotation,
                                       )
 
 # Generating the Tantulum Absorbers
-absorber_solid = create_cylinder("Absorber_body", 0, absorber_radius, absorber_height, 0, 2 * math.pi, reg)
+absorber_body_solid = create_cylinder("Absorber_body", 0, absorber_radius, absorber_height, 0, 2 * math.pi, reg)
 
 # The absorber has a hole at its top to fasten the source in
 absorber_hole_radius = (1.001 * capsule_radius_low)
 absorber_hole_height = (1.001 * capsule_height_low)
 
-#absorber_hole_solid = g4.solid.Tubs(name="Absorber_hole",
- #                                   pRMin=0,
-  #                                  pRMax=absorber_hole_radius,
-   #                                 pDz=absorber_hole_height / 2.0,
-    #                                pSPhi=0.0,
-     #                               pDPhi=2.0 * math.pi,
-      #                              registry=reg
-       #                             )
+absorber_hole_solid = g4.solid.Tubs(name="Absorber_hole",
+                                    pRMin=0,
+                                    pRMax=absorber_hole_radius,
+                                    pDz=absorber_hole_height / 2.0,
+                                    pSPhi=0.0,
+                                    pDPhi=2.0 * math.pi,
+                                    registry=reg
+                                    )
 
-#absorber_solid = g4.solid.Subtraction(name="absorber_solid",
-#                                      obj1=absorber_body_solid,
- #                                     obj2=absorber_hole_solid,
-  #                                    tra2=[[0, 0, 0], [0, 0, (absorber_height - absorber_hole_height) / 2]],
-   #                                   registry=reg)
+absorber_solid = g4.solid.Subtraction(name="absorber_solid",
+                                      obj1=absorber_body_solid,
+                                      obj2=absorber_hole_solid,
+                                      tra2=[[0, 0, 0], [0, 0, (absorber_height - absorber_hole_height) / 2]],
+                                      registry=reg)
 
 absorber_lv = create_logical_volume(absorber_solid, material, name="Absorber_LV", registry=reg)
 
@@ -171,7 +170,7 @@ source_counter = 0
 for iString in range(1, 5, 1):  # Iteration over the strings
         
                 g4.PhysicalVolume(rotation=[0, 0, 0],
-                                  position=[base_positions[iString][0], base_positions[iString][1], height_1],
+                                  position=[base_positions[iString][0], base_positions[iString][1], base_positions[iString][2] - (absorber_height + capsule_height_up) / 2.0],
                                   logicalVolume=absorber_lv,
                                   name=f"Absorber_{iString}_PV",
                                   motherVolume=mother_LV,
@@ -190,9 +189,10 @@ for iString in range(1, 5, 1):  # Iteration over the strings
                                                copyNumber=source_counter
                                                )
                     
+                    
                     g4.PhysicalVolume(rotation=[0, 0, 0],
                                                position=[base_positions[iString][0], base_positions[iString][1],
-                                               base_positions[iString][2] + iSource * 100.0],
+                                               base_positions[iString][2] + iSource * 100.0], # 100mm being the height difference between the sources
                                                logicalVolume=source_lv,
                                                name=f"Source_{iString}_{iSource + 1}_PV",
                                                motherVolume=mother_LV,
