@@ -11,6 +11,7 @@ This project contains scripts for generating and implementing geometries related
 - `implement_sources_fra.py`: Francesco improved my code for implementing the geometries (except for the steel band) in l200. This was used as the basis for all subsequent codes.
 - `implement_sources_glo.py`: Implements the geometries (except for the steel band) in l200, with some corrections added to visualize and simulate the code.
 - `implement_sources_glo_v2.py`: Same code as `implement_sources_glo.py`, but here the extrapolated masses from `Extrapolate.py` were imported and the sizes of all sources were adjusted.
+- `implement_sources_final.py`: Implements all the sources, steel holder, steel bands and absorbers. It uses `Extrapolate.py` in order to adjust the sizes of the sources according to reality.
 - `Test.py`: Code for testing various functionalities.
 - `utils.py`: Contains functions needed to generate cylinders for the absorbers, sources and steel holder. Additionally it contains functions for generating the steel band and other utilities.
 - 
@@ -22,7 +23,6 @@ This project contains scripts for generating and implementing geometries related
 
 ## Ignored Test Files
 
-- `implement_sources_test.py`
 - `Test.py`
 
 These files are used for testing purposes and are not essential for the main functionality of the project.
